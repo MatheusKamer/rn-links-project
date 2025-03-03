@@ -2,12 +2,11 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+    height: 52,
+    maxHeight: 52,
   },
-  name: {
-    fontSize: 16,
-    fontWeight: "600",
+  content: {
+    gap: 16,
+    paddingHorizontal: 24,
   },
 });
