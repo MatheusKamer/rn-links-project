@@ -25,5 +25,7 @@ export const styles = StyleSheet.create({
   form: {
     padding: 24,
     gap: 16,
+    borderTopWidth: 1,
+    borderTopColor: colors.gray[600],
   },
 });
