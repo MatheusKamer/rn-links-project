@@ -6,6 +6,7 @@ import {
   Modal,
   Text,
   Alert,
+  Linking,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
@@ -20,24 +21,69 @@ import { Option } from "@/components/option";
 import { Categories } from "@/components/categories";
 
 export default function Index() {
-  const [category, setCategory] = useState("");
   const [links, setLinks] = useState<LinkStorage[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [category, setCategory] = useState("");
+  const [selectedLink, setSelectedLink] = useState<LinkStorage>(
+    {} as LinkStorage
+  );
 
   async function getLinks() {
     try {
       const response = await linkStorage.get();
+      const filteredLinks = response.filter((link) =>
+        category ? link.category === category : true
+      );
 
-      return setLinks(response);
+      return setLinks(filteredLinks);
     } catch (error) {
       Alert.alert("Erro", "Erro ao buscar links");
     }
   }
 
+  async function removeLink() {
+    try {
+      await linkStorage.remove(selectedLink.id);
+      setIsOpen(false);
+      getLinks();
+    } catch (error) {
+      Alert.alert("Erro", "Erro ao remover link");
+    }
+  }
+
+  function handleRemoveLink() {
+    Alert.alert("Remover", "Deseja realmente excluir este link?", [
+      { style: "cancel", text: "Cancelar" },
+      {
+        style: "destructive",
+        text: "Remover",
+        onPress: removeLink,
+      },
+    ]);
+  }
+
+  async function handleOpenLink() {
+    try {
+      await Linking.openURL(selectedLink.url);
+      setIsOpen(false);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível abrir o link");
+    }
+  }
+
+  function handleCategoryChange(value: string) {
+    value === category ? setCategory("") : setCategory(value);
+  }
+
+  function handleDetails(selected: LinkStorage) {
+    setSelectedLink(selected);
+    setIsOpen(true);
+  }
+
   useFocusEffect(
     useCallback(() => {
       getLinks();
-    }, [])
+    }, [category])
   );
 
   return (
@@ -54,7 +100,7 @@ export default function Index() {
         </TouchableOpacity>
       </View>
 
-      <Categories onChange={setCategory} selected={category} />
+      <Categories onChange={handleCategoryChange} selected={category} />
 
       <FlatList
         data={links}
@@ -63,7 +109,7 @@ export default function Index() {
           <Link
             name={item.name}
             url={item.url}
-            onDetails={() => setIsOpen(true)}
+            onDetails={() => handleDetails(item)}
           />
         )}
         style={styles.links}
@@ -71,11 +117,11 @@ export default function Index() {
         showsVerticalScrollIndicator={false}
       />
 
-      <Modal transparent visible={isOpen}>
+      <Modal transparent visible={isOpen} animationType="slide">
         <View style={styles.modal}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalCategory}>Curso</Text>
+              <Text style={styles.modalCategory}>{selectedLink.category}</Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <MaterialIcons
                   name="close"
@@ -84,12 +130,17 @@ export default function Index() {
                 />
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalLinkName}>Rocketseat</Text>
-            <Text style={styles.modalUrl}>https://rocketseat.com.br</Text>
+            <Text style={styles.modalLinkName}>{selectedLink.name}</Text>
+            <Text style={styles.modalUrl}>{selectedLink.url}</Text>
 
             <View style={styles.modalFooter}>
-              <Option name="Excluir" icon="delete" variant="secondary" />
-              <Option name="Abrir" icon="language" />
+              <Option
+                name="Excluir"
+                icon="delete"
+                variant="secondary"
+                onPress={handleRemoveLink}
+              />
+              <Option name="Abrir" icon="language" onPress={handleOpenLink} />
             </View>
           </View>
         </View>
