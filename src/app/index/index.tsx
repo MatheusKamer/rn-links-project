@@ -5,13 +5,15 @@ import {
   FlatList,
   Modal,
   Text,
+  Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useState, useCallback } from "react";
 
 import { styles } from "./styles";
 import { colors } from "@/styles/colors";
+import { linkStorage, LinkStorage } from "@/storage/link-storage";
 
 import { Link } from "@/components/link";
 import { Option } from "@/components/option";
@@ -19,6 +21,25 @@ import { Categories } from "@/components/categories";
 
 export default function Index() {
   const [category, setCategory] = useState("");
+  const [links, setLinks] = useState<LinkStorage[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  async function getLinks() {
+    try {
+      const response = await linkStorage.get();
+
+      return setLinks(response);
+    } catch (error) {
+      Alert.alert("Erro", "Erro ao buscar links");
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      getLinks();
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -36,13 +57,13 @@ export default function Index() {
       <Categories onChange={setCategory} selected={category} />
 
       <FlatList
-        data={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
-        keyExtractor={(item) => item}
+        data={links}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Link
-            name={`Sicredi ${item}`}
-            url="https://sicredi.com.br"
-            onDetails={() => console.log("Clicou!")}
+            name={item.name}
+            url={item.url}
+            onDetails={() => setIsOpen(true)}
           />
         )}
         style={styles.links}
@@ -50,12 +71,12 @@ export default function Index() {
         showsVerticalScrollIndicator={false}
       />
 
-      <Modal transparent visible={false}>
+      <Modal transparent visible={isOpen}>
         <View style={styles.modal}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalCategory}>Curso</Text>
-              <TouchableOpacity onPress={() => console.log("Fechar")}>
+              <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <MaterialIcons
                   name="close"
                   size={20}
