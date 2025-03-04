@@ -10,8 +10,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { styles } from "./styles";
 import { colors } from "@/styles/colors";
+
+import { Link } from "@/components/link";
+import { Option } from "@/components/option";
 import { Categories } from "@/components/categories";
-import Link from "@/components/link";
 
 export default function Index() {
   return (
@@ -60,6 +62,11 @@ export default function Index() {
             </View>
             <Text style={styles.modalLinkName}>Rocketseat</Text>
             <Text style={styles.modalUrl}>https://rocketseat.com.br</Text>
+
+            <View style={styles.modalFooter}>
+              <Option name="Excluir" icon="delete" variant="secondary" />
+              <Option name="Abrir" icon="language" />
+            </View>
           </View>
         </View>
       </Modal>

@@ -10,7 +10,7 @@ type LinkProps = {
   onDetails: () => void;
 };
 
-export default function Link({ name, url, onDetails }: LinkProps) {
+export function Link({ name, url, onDetails }: LinkProps) {
   return (
     <View style={styles.container}>
       <View style={styles.details}>
