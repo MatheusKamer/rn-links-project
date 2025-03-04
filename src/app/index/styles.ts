@@ -31,4 +31,36 @@ export const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 100,
   },
+  modal: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: colors.gray[900],
+    borderTopWidth: 1,
+    borderTopColor: colors.gray[800],
+    padding: 24,
+    paddingBottom: 44,
+  },
+  modalHeader: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  modalCategory: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
+    color: colors.gray[400],
+  },
+  modalLinkName: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: colors.gray[200],
+  },
+  modalUrl: {
+    fontSize: 14,
+    color: colors.gray[400],
+  },
 });
