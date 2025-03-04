@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -16,11 +16,23 @@ export default function Add() {
   const [url, setUrl] = useState("");
 
   function handleAdd() {
-    if (!category || !name || !url) {
-      return;
+    if (!category.trim()) {
+      return Alert.alert("Categoria", "Seleciona uma categoria!");
+    }
+
+    if (!name.trim()) {
+      return Alert.alert("Nome", "Preencha o nome!");
+    }
+
+    if (!url.trim()) {
+      return Alert.alert("URL", "Preencha a URL!");
     }
 
     // Add to database
+  }
+
+  function handleCategoryChange(value: string) {
+    value === category ? setCategory("") : setCategory(value);
   }
 
   return (
@@ -35,7 +47,7 @@ export default function Add() {
 
       <Text style={styles.label}>Selecione uma categoria</Text>
 
-      <Categories onChange={setCategory} selected={category} />
+      <Categories onChange={handleCategoryChange} selected={category} />
 
       <View style={styles.form}>
         <Input placeholder="Nome" onChangeText={setName} autoCorrect={false} />
